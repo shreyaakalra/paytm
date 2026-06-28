@@ -7,7 +7,7 @@ import "dotenv/config";
 
 const userRouter = express.Router();
 
-userRouter.post('/sign-up', async (req, res) => {
+userRouter.post('/sign-up', async(req, res) => {
     try{
         const validated = userValidator.safeParse(req.body);
 
@@ -51,6 +51,49 @@ userRouter.post('/sign-up', async (req, res) => {
             "Error": "Internal Server Error"
         });
     }
+})
+
+userRouter.post('/sign-in', async(req, res) => {
+    try{
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({
+                message: "Please enter an email and password"
+            });
+        }
+
+        const user = await userSchema.findOne({email: email});
+
+        if(!user){
+            return res.status(401).json({
+                message: "User doesn't exist. Please sign up first."
+            });
+        }
+
+        const checkPass = await bcrypt.compare(password, user.password);
+
+        if(!checkPass){
+            return res.status(403).json({
+                message: "wrong email or password"
+            });
+        }
+
+        const token = jwt.sign(
+            {id: user._id},
+            process.env.JWT_SECRET,
+            {expiresIn: '1h'}
+        );
+
+        res.status(200).json({token});
+    }
+    catch(err){
+        console.log(err.message);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+    
 })
 
 export default userRouter;
