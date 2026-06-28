@@ -3,9 +3,10 @@ import connectDB from "./db.js";
 import router from "./routes/index.js";
 import userRouter from "./routes/user.js";
 import cors from "cors";
+import "dotenv/config"
 
 const app = express();
-const port = 3001;
+const port = 5001;
 
 app.use(cors());
 app.use(express.json());
@@ -19,7 +20,7 @@ app.use("/api/v1/user", userRouter);
 // router sees /users → runs the function → sends back JSON
 
 app.listen(port, () => {
-    console.log("App is listening at port: 3001");
+    console.log("App is listening at port: http://localhost:5001/");
 })
 
 
