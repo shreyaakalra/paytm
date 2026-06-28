@@ -1,0 +1,2 @@
+const JWT_SECRET = "DCJNCDSJKNCVJHDVBV";
+export default JWT_SECRET;
