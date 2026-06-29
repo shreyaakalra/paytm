@@ -2,9 +2,17 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 export default function authMiddleware(req, res, next){
-    
+
     try{
-        const token = req.header.authorization.split(" ")[1];
+        const headerAuth = req.headers.authorization;
+
+        if(!headerAuth || !headerAuth.startsWith("Bearer ")){
+            return res.status(404).json({
+                message: "No auth header found."
+            })
+        }
+
+        const token = headerAuth.split(" ")[1];
 
         if(!token){
             return res.status(400).json({

@@ -1,9 +1,10 @@
 import express from "express";
-import { userValidator } from "../validators.js";
+import { userValidator, userUpdateValidator } from "../validators.js";
 import userSchema from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import authMiddleware from "../middlewares/authMiddleware.js"
 
 const userRouter = express.Router();
 
@@ -94,6 +95,54 @@ userRouter.post('/sign-in', async(req, res) => {
         })
     }
     
+})
+
+userRouter.put('/', authMiddleware, async(req, res) => {
+    try{
+        const userID = req.userId;
+        const validated = userUpdateValidator.safeParse(req.body);
+
+        if(!validated.success){
+            return res.status(401).json({
+                message: "user not validated."
+            })
+        }
+
+        const { firstName, lastName, password } = validated.data;
+        
+        let updatedData = {};
+
+        if(firstName) updatedData.firstName = firstName;
+        if(lastName) updatedData.lastName = lastName;
+
+        if(password){
+            const salt = await bcrypt.genSalt(10);
+            const hashedPass = await bcrypt.hash(password, salt);
+            updatedData.password = hashedPass;
+        }
+
+        const updated = await userSchema.findByIdAndUpdate(userID, {
+            $set: updatedData
+        });
+
+        if(!updated){
+            return res.status(403).json({
+                message: "user doesn't exist."
+            })
+        }
+
+        res.status(200).json({
+            message: "Updated Successfully"
+        })
+    }
+    catch(err){
+        console.log(err.message);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+    
+
 })
 
 export default userRouter;

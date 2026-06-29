@@ -21,4 +21,20 @@ export const userValidator = z.object({
             .regex(/[0-9]/, {message: "password must contain atleast one number."})
             .regex(/[^a-zA-Z0-9]/, {message: "password must contain atleast one special character."})
 
-})
+});
+
+export const userUpdateValidator = z.object({
+  firstName: z.string()
+    .min(3).max(100)
+    .optional(),
+  lastName: z.string()
+    .min(3).max(100)
+    .optional(),
+  password: z.string()
+    .min(8).max(20)
+    .regex(/[A-Z]/)
+    .regex(/[a-z]/)
+    .regex(/[0-9]/)
+    .regex(/[^a-zA-Z0-9]/)
+    .optional()
+});
