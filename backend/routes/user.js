@@ -1,6 +1,7 @@
 import express from "express";
 import { userValidator, userUpdateValidator } from "../validators.js";
 import userSchema from "../models/User.js";
+import accountSchema from "../models/Account.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
@@ -43,6 +44,11 @@ userRouter.post('/sign-up', async(req, res) => {
             process.env.JWT_SECRET,
             {expiresIn: '1h'}
         );
+
+        await accountSchema.create({
+            balance: 1 + Math.random() * 10000,
+            userId: newUser._id
+        })
 
         res.status(200).json({token});
     }
