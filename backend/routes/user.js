@@ -145,4 +145,28 @@ userRouter.put('/', authMiddleware, async(req, res) => {
 
 })
 
+userRouter.get('/bulk', async (req, res) => {
+    try{
+        const filter = req.query.filter || "";
+
+        const allUsers = await userSchema.find({
+            $or: [
+                { firstName: { $regex: `^${filter}`, $options: "i" }},
+                { lastName: { $regex: `^${filter}`, $options: "i" }}
+            ]
+        });
+
+        res.status(200).json(allUsers);
+    }
+    catch(err){
+        console.log(err.message);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+
+
+    
+})
+
 export default userRouter;
