@@ -156,7 +156,14 @@ userRouter.get('/bulk', async (req, res) => {
             ]
         });
 
-        res.status(200).json(allUsers);
+        res.status(200).json({
+            allUsers: allUsers.map(user => ({
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userID: user._id
+            }))
+        })
     }
     catch(err){
         console.log(err.message);
